@@ -21,9 +21,9 @@ module NestedForm
       @fields ||= {}
       @template.after_nested_form(association) do
         model_object = object.class.reflect_on_association(association).klass.new
-        output = %Q[<div id="#{association}_fields_blueprint" style="display: none">].html_safe
-        output << fields_for(association, model_object, :child_index => "new_#{association}", &@fields[association])
-        output.safe_concat('</div>')
+        output = %Q[<textarea id="#{association}_fields_blueprint" style="display: none">].html_safe
+        output << CGI::escapeHTML(fields_for(association, model_object, :child_index => "new_#{association}", &@fields[association])).html_safe
+        output.safe_concat('</textarea>')
         output
       end
       @template.link_to(*args, &block)
@@ -54,13 +54,6 @@ module NestedForm
       @fields ||= {}
       @fields[association_name] = block
       super(association_name, *(args << block))
-    end
-
-    def fields_for_nested_model(name, object, options, block)
-      output = '<div class="fields">'.html_safe
-      output << super
-      output.safe_concat('</div>')
-      output
     end
   end
 end

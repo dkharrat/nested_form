@@ -9,7 +9,10 @@ jQuery(function($) {
       // Setup
       var link    = e.currentTarget;
       var assoc   = $(link).attr('data-association');            // Name of child
-      var content = $('#' + assoc + '_fields_blueprint').html(); // Fields template
+      var content = $('#' + assoc + '_fields_blueprint').text(); // Fields template
+      
+      // it is expected that the fields template stored in content is wrapped by a
+      // single tag (e.g. div, tr, p, etc.) having class 'fields'
 
       // Make the context correct by replacing new_<parents> with the generated ID
       // of each of the parent objects
@@ -43,12 +46,13 @@ jQuery(function($) {
 
       var field = this.insertFields(content, assoc, link);
       $(link).closest("form")
-        .trigger({ type: 'nested:fieldAdded', field: field })
+        .trigger({ type: 'nested:fieldAdded', assoc: assoc, field: field })
         .trigger({ type: 'nested:fieldAdded:' + assoc, field: field });
       return false;
     },
     insertFields: function(content, assoc, link) {
-      return $(content).insertBefore(link);
+      // append the new field to the end of the association's section
+      return $(content).appendTo($('form #' + assoc + '_fields'));
     },
     removeFields: function(e) {
       var link = e.currentTarget;
@@ -58,9 +62,11 @@ jQuery(function($) {
       //   $(link).v
       //   hiddenField.value = '1';
       // }
+      var assoc = $(link).closest('[id$=fields]').attr('id').match(/([a-z_]+)_fields/)[1];
       var field = $(link).closest('.fields');
       field.hide();
-      $(link).closest("form").trigger({ type: 'nested:fieldRemoved', field: field });
+      $(link).closest("form").trigger({ type: 'nested:fieldRemoved', assoc: assoc, field: field });
+      $(link).closest("form").trigger({ type: 'nested:fieldRemoved:' + assoc, field: field });
       return false;
     }
   };
@@ -69,3 +75,11 @@ jQuery(function($) {
   $('form a.add_nested_fields').live('click', nestedFormEvents.addFields);
   $('form a.remove_nested_fields').live('click', nestedFormEvents.removeFields);
 });
+
+function nested_form_get_children(assoc_name) {
+    return $('#' + assoc_name + '_fields').find('.fields:visible');
+}
+
+function nested_form_get_add_button(assoc_name) {
+    return $('#' + assoc_name + '_fields').find('.add_nested_fields');
+}

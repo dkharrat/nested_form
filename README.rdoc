@@ -6,6 +6,19 @@ This gem only works with Rails 3. See the {rails2 branch}[https://github.com/rya
 
 An example project showing how this works is available in the {complex-nested-forms/nested_form branch}[https://github.com/ryanb/complex-form-examples/tree/nested_form].
 
+== Changes from original repo
+
+This gem is a fork of Ryan Bates' original {repo}[https://github.com/ryanb/nested_form]. It adds the following additional features:
+
+* Provide compatibility with forms that use tables
+* Pass association name in nested:removedField event payload
+* Add more flexibility in the location of nested_form's 'link_to_add' link
+* Provide some javascript helper methods to get the 'add field' link element and the list of field elements for a particular attribute
+
+As part of supporting the above changes, some changes in your view are required for this gem to work properly:
+
+* The blueprint fields must be wrapped by an HTML tag with class="fields"
+* The actual nested fields must be wrapped by an HTML tag with id="<attribute_name>_fields"
 
 == Changes in this repo
 
